@@ -1,6 +1,8 @@
 package org.example.model;
 
 
+import org.example.utis.Utils;
+
 import java.io.File;
 import java.util.Arrays;
 
@@ -11,11 +13,11 @@ public class Person {
     private int idade;
     private float altura;
     private long id = 1;
-    private static final String PATH_DIRECTORY = "D:\\BACKUP\\Arquivos\\Progamming\\ESTUDO_JAVA\\code\\sistemaDeCadastro01\\src\\main\\java\\org\\example\\arquivo\\users";
+
 
     public Person(String nome, String email, int idade, float altura) {
 
-        this.id = this.generateNumber(new File(PATH_DIRECTORY)) + 1;
+        this.id = this.generateNumber(new File(Utils.PATH_DIRECTORY_USERS)) + 1;
         this.nome = nome;
         this.email = email;
         this.idade = idade;
@@ -23,7 +25,7 @@ public class Person {
     }
 
     public Person() {
-        this.id = this.generateNumber(new File(PATH_DIRECTORY)) + 1;
+        this.id = this.generateNumber(new File(Utils.PATH_DIRECTORY_USERS)) + 1;
     }
 
     public String getNome() {

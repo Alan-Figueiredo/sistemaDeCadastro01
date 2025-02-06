@@ -1,5 +1,7 @@
 package org.example.questions;
 
+import org.example.utis.Utils;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -20,8 +22,8 @@ public class Questions {
     }
 
     public void readQuestions() throws FileNotFoundException {
-        String path = "D:\\BACKUP\\Arquivos\\Progamming\\ESTUDO_JAVA\\code\\sistemaDeCadastro01\\src\\main\\java\\org\\example\\arquivo\\formulario.txt";
-        try (FileReader fr = new FileReader(path);
+
+        try (FileReader fr = new FileReader(Utils.PATH_FORMULARIO);
              BufferedReader br = new BufferedReader(fr)) {
             while (br.ready()) {
                 String line = br.readLine();
@@ -34,9 +36,9 @@ public class Questions {
 
     }
 
-
     public List<String> getQuestions() {
         return questions;
     }
+
 }
 

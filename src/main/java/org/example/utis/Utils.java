@@ -6,6 +6,7 @@ import org.example.questions.Questions;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class Utils {
@@ -161,46 +162,58 @@ public class Utils {
 
     }
 
-    private void deleteQuestion() throws ArrayIndexOutOfBoundsException {
+    public void deleteQuestion() {
 
-        int linha = 0;
-        Scanner sc = new Scanner(System.in);
+
         List<String> arrQuestoes = new ArrayList<>();
+        List<String> linhasAtualizadas;
 
-        try (FileReader fr = new FileReader(PATH_FORMULARIO);
-             BufferedReader br = new BufferedReader(fr); FileWriter fw = new FileWriter(PATH_FORMULARIO, true);
-             BufferedWriter bw = new BufferedWriter(fw)) {
+        try (BufferedReader br = new BufferedReader(new FileReader(PATH_FORMULARIO))) {
 
-            System.out.println("------------------------------");
+            String lineArquivo;
 
-            while (br.ready()) {
-                String perguntas = br.readLine();
-                arrQuestoes.add(perguntas);
-                System.out.println(perguntas);
-                linha++;
+            while ((lineArquivo = br.readLine()) != null) {
+                arrQuestoes.add(lineArquivo);
             }
-            System.out.println("\nDigite o numero da linha que deseja deletar: ");
-            int question = sc.nextInt();
-
-            if(question == linha) {
-
-                try {
-                    for(int i = 0; i < arrQuestoes.size() -1 ; i++) {
-                        System.out.println(arrQuestoes.get(i));
-                    }
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            sc.close();
         } catch (IOException e) {
             e.printStackTrace();
 
         }
+
+        // Visualizar questoes
+        System.out.println("-----------------------------");
+        for (String perguntas : arrQuestoes) {
+            System.out.println(perguntas);
+        }
+
+        // Receber numero do user
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Escolha o número da pergunta que deseja deletar: ");
+        int linha = sc.nextInt();
+        sc.close();
+
+
+        if (linha >= 5 && linha <= arrQuestoes.size()) {
+
+            String linhaRemover = String.valueOf(linha);
+            linhasAtualizadas = arrQuestoes.stream().filter(i -> !i.startsWith(linhaRemover)).toList();
+
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(PATH_FORMULARIO))) {
+
+                for (String linhaAtual : linhasAtualizadas) {
+                    bw.write(linhaAtual.trim());
+                    bw.newLine();
+                    bw.flush();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            System.out.println("Não é possivel deletar essa pergunta.");
+        }
+
+
     }
-
-
-
 
 }

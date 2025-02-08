@@ -5,10 +5,7 @@ import org.example.model.Person;
 import org.example.questions.Questions;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 
 public class Utils {
@@ -65,8 +62,12 @@ public class Utils {
                 sc.close();
                 break;
             case 3:
+                this.addQuestion();
+                sc.close();
                 break;
             case 4:
+                this.deleteQuestion();
+                sc.close();
                 break;
             case 5:
                 break;
@@ -112,16 +113,16 @@ public class Utils {
         for (String arrFile : arrFiles) {
             File file = new File(PATH_DIRECTORY_USERS, arrFile);
             try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
-               int linha = 1;
-               int linhaName = 2;
-               String line;
-               while ((line = br.readLine()) != null) {
-                   if(linha == linhaName){
-                       System.out.println(linha+" - "+line);
-                       break;
-                   }
-                   linha++;
-               }
+                int linha = 1;
+                int linhaName = 2;
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (linha == linhaName) {
+                        System.out.println(linha + " - " + line);
+                        break;
+                    }
+                    linha++;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -131,13 +132,27 @@ public class Utils {
 
     private void addQuestion() {
 
+        int linha = 0;
+        Scanner sc = new Scanner(System.in);
 
         try (FileReader fr = new FileReader(PATH_FORMULARIO);
-             BufferedReader br = new BufferedReader(fr)) {
+             BufferedReader br = new BufferedReader(fr); FileWriter fw = new FileWriter(PATH_FORMULARIO, true);
+             BufferedWriter bw = new BufferedWriter(fw)) {
             while (br.ready()) {
-                String line = br.readLine();
-
+                br.readLine();
+                linha++;
             }
+
+            System.out.println("Digite a nova pergunta: ");
+            String question = sc.nextLine();
+            StringBuilder sb = new StringBuilder();
+            sb.append(linha + 1).append(" - ").append(question);
+
+            bw.newLine();
+            bw.write(String.valueOf(sb));
+            bw.flush();
+            sc.close();
+
         } catch (IOException e) {
             e.printStackTrace();
 
@@ -145,4 +160,47 @@ public class Utils {
 
 
     }
+
+    private void deleteQuestion() throws ArrayIndexOutOfBoundsException {
+
+        int linha = 0;
+        Scanner sc = new Scanner(System.in);
+        List<String> arrQuestoes = new ArrayList<>();
+
+        try (FileReader fr = new FileReader(PATH_FORMULARIO);
+             BufferedReader br = new BufferedReader(fr); FileWriter fw = new FileWriter(PATH_FORMULARIO, true);
+             BufferedWriter bw = new BufferedWriter(fw)) {
+
+            System.out.println("------------------------------");
+
+            while (br.ready()) {
+                String perguntas = br.readLine();
+                arrQuestoes.add(perguntas);
+                System.out.println(perguntas);
+                linha++;
+            }
+            System.out.println("\nDigite o numero da linha que deseja deletar: ");
+            int question = sc.nextInt();
+
+            if(question == linha) {
+
+                try {
+                    for(int i = 0; i < arrQuestoes.size() -1 ; i++) {
+                        System.out.println(arrQuestoes.get(i));
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            sc.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+    }
+
+
+
+
 }

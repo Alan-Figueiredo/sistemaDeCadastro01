@@ -33,6 +33,7 @@ public class Person {
     }
 
     public long generateNumber(File path){
+        // contar quantos arquivos tem no diretorio
         long quantilyFile = Arrays.stream(path.listFiles()).filter(file -> file.isFile()).count();
         return quantilyFile;
     }

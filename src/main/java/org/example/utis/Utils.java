@@ -6,7 +6,6 @@ import org.example.questions.Questions;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 public class Utils {
@@ -104,7 +103,7 @@ public class Utils {
         this.savePersonOnDirectory(person);
     }
 
-    private void listUser() {
+    public void listUser() {
 
         File pathUsers = new File(PATH_DIRECTORY_USERS);
 
@@ -113,16 +112,20 @@ public class Utils {
 
         for (String arrFile : arrFiles) {
             File file = new File(PATH_DIRECTORY_USERS, arrFile);
-            try (FileReader fr = new FileReader(file); BufferedReader br = new BufferedReader(fr)) {
-                int linha = 1;
-                int linhaName = 2;
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                int linhaAtual = 1; // inicial do arquivo
+                int linhaName = 2; // Segunda linha do arquivo
                 String line;
+                StringBuilder sb = new StringBuilder();
+
                 while ((line = br.readLine()) != null) {
-                    if (linha == linhaName) {
-                        System.out.println(linha + " - " + line);
+                    if (linhaAtual == linhaName) {
+                        sb.append(line);
+                        System.out.println(sb);
                         break;
                     }
-                    linha++;
+                sb.append(line).append(" - ");
+                linhaAtual++;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -162,8 +165,7 @@ public class Utils {
 
     }
 
-    public void deleteQuestion() {
-
+    private void deleteQuestion() {
 
         List<String> arrQuestoes = new ArrayList<>();
         List<String> linhasAtualizadas;
@@ -171,7 +173,6 @@ public class Utils {
         try (BufferedReader br = new BufferedReader(new FileReader(PATH_FORMULARIO))) {
 
             String lineArquivo;
-
             while ((lineArquivo = br.readLine()) != null) {
                 arrQuestoes.add(lineArquivo);
             }
@@ -179,7 +180,6 @@ public class Utils {
             e.printStackTrace();
 
         }
-
         // Visualizar questoes
         System.out.println("-----------------------------");
         for (String perguntas : arrQuestoes) {
@@ -192,14 +192,11 @@ public class Utils {
         int linha = sc.nextInt();
         sc.close();
 
-
         if (linha >= 5 && linha <= arrQuestoes.size()) {
-
             String linhaRemover = String.valueOf(linha);
             linhasAtualizadas = arrQuestoes.stream().filter(i -> !i.startsWith(linhaRemover)).toList();
 
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(PATH_FORMULARIO))) {
-
                 for (String linhaAtual : linhasAtualizadas) {
                     bw.write(linhaAtual.trim());
                     bw.newLine();
@@ -208,7 +205,6 @@ public class Utils {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         } else {
             System.out.println("Não é possivel deletar essa pergunta.");
         }
@@ -216,4 +212,8 @@ public class Utils {
 
     }
 
+    public void searchUser(){
+
+
+    }
 }

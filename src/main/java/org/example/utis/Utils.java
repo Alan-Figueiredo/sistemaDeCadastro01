@@ -69,7 +69,9 @@ public class Utils {
                 this.deleteQuestion();
                 sc.close();
                 break;
-            case 5:
+            default:
+                this.searchUser();
+                sc.close();
                 break;
         }
     }
@@ -106,7 +108,7 @@ public class Utils {
     public void listUser() {
 
         File pathUsers = new File(PATH_DIRECTORY_USERS);
-
+        List<String> nome = new ArrayList<>();
         // Lista os arquivos e transforma numa lista verificando se existe ou nao arquivos no diretorio
         List<String> arrFiles = Arrays.stream(Objects.requireNonNull(pathUsers.list())).toList();
 
@@ -121,6 +123,7 @@ public class Utils {
                 while ((line = br.readLine()) != null) {
                     if (linhaAtual == linhaName) {
                         sb.append(line);
+                        nome.add(sb.toString());
                         System.out.println(sb);
                         break;
                     }
@@ -214,6 +217,35 @@ public class Utils {
 
     public void searchUser(){
 
+        //Scanner sc = new Scanner(System.in);
+        List<String> listaUser;
+        File pathUsers = new File(PATH_DIRECTORY_USERS);
+        List<String> arrFiles = Arrays.stream(Objects.requireNonNull(pathUsers.list())).toList();
 
+        //System.out.println("Digite o nome que deseja buscar: ");
+
+        //String resposta = sc.nextLine();
+        String resposta = "alan";
+
+        for(String arrFile : arrFiles) {
+            File file = new File(PATH_DIRECTORY_USERS, arrFile);
+            try(BufferedReader br = new BufferedReader(new FileReader(file))){
+
+                String line;
+                while((line = br.readLine()) != null) {
+                    if(line.contains(resposta)) {
+                        System.out.println("achou");
+                        resposta = line;
+                        System.out.println(resposta);
+                    }
+                }
+
+
+            } catch( IOException e){
+                e.printStackTrace();
+            }
+        }
+
+        //sc.close();
     }
 }

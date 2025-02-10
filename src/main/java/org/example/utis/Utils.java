@@ -1,6 +1,10 @@
 package org.example.utis;
 
 
+import org.example.exception.AlturaInvalidaException;
+import org.example.exception.EmailInvalidoException;
+import org.example.exception.IdadeInvalidaException;
+import org.example.exception.NomeInvalidoException;
 import org.example.model.Person;
 import org.example.questions.Questions;
 
@@ -81,26 +85,52 @@ public class Utils {
         Questions qt = new Questions();
         Scanner sc = new Scanner(System.in);
         Person person = new Person();
+        List<String> emails = this.searchEmail();
 
         for (String question : qt.getQuestions()) {
             System.out.println(question);
+
             if (question.contains("idade")) {
                 int idade = sc.nextInt();
+                sc.nextLine();
+                if (idade < 18) {
+                    throw new IdadeInvalidaException("O usuário deve ter pelo menos 18 anos.");
+                }
                 person.setIdade(idade);
+
             } else if (question.contains("altura")) {
-                float altura = sc.nextFloat();
-                person.setAltura(altura);
+                String altura = sc.nextLine();
+                if (!altura.matches("\\d+,\\d+")) {
+                    throw new AlturaInvalidaException("O formato da altura é inválido. Utilize vírgulas em vez de pontos, ex: 1,75.");
+                }
+                person.setAltura(Float.parseFloat(altura));
+
             } else if (question.contains("nome")) {
-                String nome = sc.nextLine();
+                String nome = sc.nextLine().trim();
+                if (nome.length() < 10) {
+                    throw new NomeInvalidoException("O nome deve ter pelo menos 10 caracteres.");
+                }
                 person.setNome(nome);
+
             } else {
-                String email = sc.nextLine();
-                person.setEmail(email);
+                String email = sc.nextLine().trim();
+                if (!email.matches("^[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z]{2,}$")) {
+                    throw new EmailInvalidoException("O e-mail informado é inválido.");
+
+                }
+                for(String i : emails) {
+                    if(email.equals(i)) {
+                        throw new EmailInvalidoException("O email ja existente.");
+                    } else {
+                        person.setEmail(email);
+                    }
+                }
+
+
             }
-
         }
-        sc.close();
 
+        sc.close();
         System.out.println(person);
         this.savePersonOnDirectory(person);
     }
@@ -127,8 +157,8 @@ public class Utils {
                         System.out.println(sb);
                         break;
                     }
-                sb.append(line).append(" - ");
-                linhaAtual++;
+                    sb.append(line).append(" - ");
+                    linhaAtual++;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -215,28 +245,26 @@ public class Utils {
 
     }
 
-    public void searchUser(){
+    private void searchUser() {
 
-        //Scanner sc = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
         List<String> listaUser = new ArrayList<>();
         File pathUsers = new File(PATH_DIRECTORY_USERS);
         List<String> arrFiles = Arrays.stream(Objects.requireNonNull(pathUsers.list())).toList();
 
-        //System.out.println("Digite o nome que deseja buscar: ");
+        System.out.println("Digite o nome que deseja buscar: ");
+        String resposta = sc.nextLine();
 
-        //String resposta = sc.nextLine();
-        String resposta = "Luca";
-
-        for(String arrFile : arrFiles) {
+        for (String arrFile : arrFiles) {
             File file = new File(PATH_DIRECTORY_USERS, arrFile);
-            try(BufferedReader br = new BufferedReader(new FileReader(file))){
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                 String line;
-                while((line = br.readLine()) != null) {
-                    if(line.toLowerCase().contains(resposta.toLowerCase())) {
+                while ((line = br.readLine()) != null) {
+                    if (line.toLowerCase().contains(resposta.toLowerCase())) {
                         listaUser.add(line);
                     }
                 }
-            } catch( IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -244,6 +272,38 @@ public class Utils {
                 .sorted(String.CASE_INSENSITIVE_ORDER) // Ignora letras maiusculas na hora de ordenar
                 .toList());
 
-        //sc.close();
+        sc.close();
+    }
+
+    private List<String> searchEmail() {
+
+            File pathUsers = new File(PATH_DIRECTORY_USERS);
+            List<String> email = new ArrayList<>();
+
+            // Lista os arquivos e transforma numa lista verificando se existe ou nao arquivos no diretorio
+            List<String> arrFiles = Arrays.stream(Objects.requireNonNull(pathUsers.list())).toList();
+
+            for (String arrFile : arrFiles) {
+                File file = new File(PATH_DIRECTORY_USERS, arrFile);
+                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                    int linhaAtual = 1; // inicial do arquivo
+                    int linhaEmail = 3; // Terceira linha do arquivo
+                    String line;
+                    StringBuilder sb = new StringBuilder();
+
+                    while ((line = br.readLine()) != null) {
+                        if (linhaAtual == linhaEmail) {
+                            sb.append(line);
+                            email.add(sb.toString());
+                            break;
+                        }
+                        linhaAtual++;
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        return email;
     }
 }

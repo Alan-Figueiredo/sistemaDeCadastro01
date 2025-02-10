@@ -218,33 +218,31 @@ public class Utils {
     public void searchUser(){
 
         //Scanner sc = new Scanner(System.in);
-        List<String> listaUser;
+        List<String> listaUser = new ArrayList<>();
         File pathUsers = new File(PATH_DIRECTORY_USERS);
         List<String> arrFiles = Arrays.stream(Objects.requireNonNull(pathUsers.list())).toList();
 
         //System.out.println("Digite o nome que deseja buscar: ");
 
         //String resposta = sc.nextLine();
-        String resposta = "alan";
+        String resposta = "Luca";
 
         for(String arrFile : arrFiles) {
             File file = new File(PATH_DIRECTORY_USERS, arrFile);
             try(BufferedReader br = new BufferedReader(new FileReader(file))){
-
                 String line;
                 while((line = br.readLine()) != null) {
-                    if(line.contains(resposta)) {
-                        System.out.println("achou");
-                        resposta = line;
-                        System.out.println(resposta);
+                    if(line.toLowerCase().contains(resposta.toLowerCase())) {
+                        listaUser.add(line);
                     }
                 }
-
-
             } catch( IOException e){
                 e.printStackTrace();
             }
         }
+        System.out.println("Cadastrados: " + listaUser.stream()
+                .sorted(String.CASE_INSENSITIVE_ORDER) // Ignora letras maiusculas na hora de ordenar
+                .toList());
 
         //sc.close();
     }
